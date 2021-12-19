@@ -4,7 +4,7 @@ from torch.nn import Sequential
 from config_const import CACHED_MODEL_PATH, MODEL_DIM
 from model_builder.abs_decoder import AbsDecoder
 from model_builder.phobert_model import PhoBert
-
+from torch.nn.functional import pad
 from model_builder.utils import get_cls_embed, padding_and_stack_cls
 
 
@@ -35,10 +35,13 @@ class AbsBertSumm(nn.Module):
         embed_phase1 = self.phase1_bert(input_ids=src_ids,
                                         token_type_ids=src_token_type,
                                         attention_mask=src_pad_mask)
-        cls_embed = get_cls_embed(tok_embed=embed_phase1, cls_pos=src_cls_pos)
-        padded_cls_embed, pad_mask = padding_and_stack_cls(cls_embed)
 
-        embed_tgt = self.embedding_inp(input_ids=tgt_ids, token_type_ids=tgt_token_type)
+        cls_embed = get_cls_embed(tok_embed=embed_phase1, cls_pos=src_cls_pos)  # n_batch * n_cls * n_embed
+        padded_cls_embed, pad_mask = padding_and_stack_cls(cls_embed)  # n_batch * MAX_SEQ_LENGTH * n_embed
+
+
+        embed_tgt = self.embedding_inp(input_ids=tgt_ids,
+                                       token_type_ids=tgt_token_type)  # n_batch * MAX_SEQ_LENGTH * 768
 
         out = self.phase2_trans_decoder(tgt=embed_tgt, tgt_key_padding_mask=tgt_pad_mask,
                                         memory=padded_cls_embed, memory_key_padding_mask=pad_mask)
