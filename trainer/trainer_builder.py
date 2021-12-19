@@ -10,6 +10,6 @@ class PrintCallback(Callback):
         print("Training is done.")
 
 
-def start_training(abs_bert_summ_model, train_dataloader, val_dataloader):
-    trainer = Trainer(accelerator='auto', gpus=1)
+def start_training(abs_bert_summ_model, train_dataloader, val_dataloader, gpus):
+    trainer = Trainer(accelerator='auto', gpus=gpus)
     trainer.fit(model=abs_bert_summ_model, train_dataloaders=train_dataloader)
