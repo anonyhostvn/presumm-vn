@@ -1,8 +1,5 @@
-from pytorch_lightning import LightningModule
-from pytorch_lightning.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from torch import nn
 from torch.nn import Sequential
-from transformers import AdamW, get_linear_schedule_with_warmup
 
 from config_const import CACHED_MODEL_PATH, MODEL_DIM
 from model_builder.abs_decoder import AbsDecoder

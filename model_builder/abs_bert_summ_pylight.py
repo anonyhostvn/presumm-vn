@@ -33,8 +33,8 @@ class AbsBertSummPylight(LightningModule):
         :param batch_idx: Số thứ tự của batch
         :return:
         """
-        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask \
-            , tgt_inp_ids, tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids\
+            , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
         logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
                             , is_freeze_phase1=True, src_cls_pos=src_lis_cls_pos
                             , tgt_ids=tgt_inp_ids, tgt_pad_mask=tgt_mask, tgt_token_type=tgt_tok_type_ids)
@@ -51,7 +51,9 @@ class AbsBertSummPylight(LightningModule):
                 loss = single_loss
             else:
                 loss += single_loss
-        return loss
+
+        tensorboard_logs = {'train_loss': loss}
+        return {'loss': loss, 'log': tensorboard_logs}
 
     def configure_optimizers(self):
         """
