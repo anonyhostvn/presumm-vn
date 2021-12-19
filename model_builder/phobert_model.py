@@ -14,7 +14,7 @@ class PhoBert(nn.Module):
     sequence_len <= 258.
     """
 
-    def __init__(self, large, temp_dir):
+    def __init__(self, large, temp_dir, is_freeze):
         super(PhoBert, self).__init__()
         # Lựa chọn mô hình BERT-large hoặc BERT-base
         if large:
@@ -23,8 +23,9 @@ class PhoBert(nn.Module):
             self.model = BertModel.from_pretrained(BERT_BASE_MODEL, cache_dir=temp_dir)
 
         self.config = self.model.config
+        self.is_freeze = is_freeze
 
-    def forward(self, input_ids, token_type_ids, attention_mask, is_freeze):
+    def forward(self, input_ids, token_type_ids, attention_mask):
         """
         :param input_ids:  embed đầu vào (n_batch * n_seq)
         :param token_type_ids: đánh dấu tok nào thuộc đoạn nào (n_batch * n_seq)
@@ -33,7 +34,7 @@ class PhoBert(nn.Module):
         :return:
         """
         # print(input_ids, token_type_ids, attention_mask)
-        if not is_freeze:
+        if not self.is_freeze:
             self.model.train()
             _ = self.model(
                 input_ids=input_ids,

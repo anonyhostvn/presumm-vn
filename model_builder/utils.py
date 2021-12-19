@@ -19,8 +19,13 @@ def padding_seq(tok_seq):
     Hàm này sẽ padding một sequence sao cho n_seq = MAX_TOK_LEN
     """
     n_seq, n_embed = tok_seq.shape
-    padded_tok_seq = torch.zeros(MAX_SEQ_LENGTH, n_embed, requires_grad=tok_seq.requires_grad, dtype=tok_seq.dtype)
-    mask = torch.zeros(MAX_SEQ_LENGTH, dtype=torch.long)
+    device = None
+    if torch.cuda.is_available():
+        device = tok_seq.get_device()
+    padded_tok_seq = torch.zeros(MAX_SEQ_LENGTH, n_embed
+                                 , requires_grad=tok_seq.requires_grad
+                                 , dtype=tok_seq.dtype, device=device)
+    mask = torch.zeros(MAX_SEQ_LENGTH, device=device, dtype=torch.long)
     padded_tok_seq[:n_seq, :] = tok_seq
     mask[:n_seq] = 1
     return padded_tok_seq, mask

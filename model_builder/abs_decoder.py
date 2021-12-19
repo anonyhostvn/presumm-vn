@@ -7,8 +7,8 @@ from model_builder.utils import DEFAULT_MASK_MATRIX
 class AbsDecoder(nn.Module):
     def __init__(self, n_head=8, n_decoder_block=1):
         super(AbsDecoder, self).__init__()
-        self.decoder_layer = nn.TransformerDecoderLayer(batch_first=True, d_model=MODEL_DIM, nhead=n_head)
-        self.transformer_decoder = nn.TransformerDecoder(self.decoder_layer, num_layers=n_decoder_block)
+        decoder_layer = nn.TransformerDecoderLayer(batch_first=True, d_model=MODEL_DIM, nhead=n_head)
+        self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=n_decoder_block)
 
     # tgt: đầu vào của decoder (batch_size * tgt_seq_len * embed_dim)
     # memory: embed của input sequence (batch_size * src_seq_len * embed_dim)

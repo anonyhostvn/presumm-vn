@@ -11,7 +11,7 @@ from model_builder.utils import get_cls_embed, padding_and_stack_cls
 class AbsBertSumm(nn.Module):
     def __init__(self, vocab_size):
         super(AbsBertSumm, self).__init__()
-        self.phase1_bert = PhoBert(large=False, temp_dir=CACHED_MODEL_PATH)
+        self.phase1_bert = PhoBert(large=False, temp_dir=CACHED_MODEL_PATH, is_freeze=False)
         self.phase2_trans_decoder = AbsDecoder()
         self.embedding_inp = self.phase1_bert.model.embeddings
         self.token_decode = Sequential(
@@ -31,12 +31,10 @@ class AbsBertSumm(nn.Module):
         :param tgt_token_type: đánh dấu đoạn A và B (batch_size * seq_len)
         :return:
         """
+        # n_batch * n_tokens * n_embed_dim
         embed_phase1 = self.phase1_bert(input_ids=src_ids,
                                         token_type_ids=src_token_type,
-                                        attention_mask=src_pad_mask,
-                                        is_freeze=is_freeze_phase1)
-        # print('embed_phase1: ', embed_phase1)
-
+                                        attention_mask=src_pad_mask)
         cls_embed = get_cls_embed(tok_embed=embed_phase1, cls_pos=src_cls_pos)
         padded_cls_embed, pad_mask = padding_and_stack_cls(cls_embed)
 
