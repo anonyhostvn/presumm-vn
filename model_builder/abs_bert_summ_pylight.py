@@ -23,7 +23,8 @@ class AbsBertSummPylight(LightningModule):
     def forward(self, src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask
                 , tgt_inp_ids, tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask):
         return self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
-                          , is_freeze_phase1=True, src_cls_pos=src_lis_cls_pos
+                          # , is_freeze_phase1=True
+                          , src_cls_pos=src_lis_cls_pos
                           , tgt_ids=tgt_inp_ids, tgt_pad_mask=tgt_mask, tgt_token_type=tgt_tok_type_ids)
 
     def training_step(self, batch, batch_idx):
@@ -33,11 +34,14 @@ class AbsBertSummPylight(LightningModule):
         :param batch_idx: Số thứ tự của batch
         :return:
         """
-        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids\
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
             , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
         logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
-                            , is_freeze_phase1=True, src_cls_pos=src_lis_cls_pos
-                            , tgt_ids=tgt_inp_ids, tgt_pad_mask=tgt_mask, tgt_token_type=tgt_tok_type_ids)
+                            # , is_freeze_phase1=True
+                            , src_cls_pos=src_lis_cls_pos
+                            , tgt_ids=tgt_inp_ids
+                            , tgt_pad_mask=tgt_mask
+                            , tgt_token_type=tgt_tok_type_ids)
         out_prob = torch.softmax(logits, dim=2)
         tgt_one_hot = one_hot(tgt_inp_ids, num_classes=self.vocab_size)
 

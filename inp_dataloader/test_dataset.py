@@ -18,7 +18,7 @@ if __name__ == '__main__':
         logits = abs_bert_summ(src_ids=src_inp_ids,
                                src_pad_mask=src_mask,
                                src_token_type=src_tok_type_ids,
-                               is_freeze_phase1=True,
+                               # is_freeze_phase1=True,
                                src_cls_pos=src_lis_cls_pos,
                                tgt_ids=tgt_inp_ids,
                                tgt_pad_mask=tgt_mask,

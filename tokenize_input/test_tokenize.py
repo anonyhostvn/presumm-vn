@@ -19,7 +19,7 @@ if __name__ == '__main__':
     print(abs_bert_summ(src_ids=torch.tensor(src_inp_ids).reshape(1, -1),
                         src_pad_mask=torch.tensor(src_mask).reshape(1, -1),
                         src_token_type=torch.tensor(src_tok_type_ids).reshape(1, -1),
-                        is_freeze_phase1=True,
+                        # is_freeze_phase1=True,
                         src_cls_pos=torch.tensor(src_lis_cls_pos).reshape(1, -1),
                         tgt_ids=torch.tensor(tgt_inp_ids).reshape(1, -1),
                         tgt_pad_mask=torch.tensor(tgt_mask).reshape(1, -1),
