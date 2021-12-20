@@ -1,10 +1,10 @@
+import torch
 from torch import nn
 from torch.nn import Sequential
 
 from config_const import CACHED_MODEL_PATH, MODEL_DIM
 from model_builder.abs_decoder import AbsDecoder
 from model_builder.phobert_model import PhoBert
-from torch.nn.functional import pad
 from model_builder.utils import get_cls_embed, padding_and_stack_cls
 
 
@@ -18,7 +18,7 @@ class AbsBertSumm(nn.Module):
             nn.Linear(MODEL_DIM, vocab_size)
         )
 
-    def forward(self, src_ids, src_pad_mask, src_token_type, is_freeze_phase1, src_cls_pos
+    def forward(self, src_ids, src_pad_mask, src_token_type, src_cls_pos
                 , tgt_ids, tgt_pad_mask, tgt_token_type):
         """
         :param src_ids: embeding token của src  (batch_size * seq_len)
@@ -38,7 +38,6 @@ class AbsBertSumm(nn.Module):
 
         cls_embed = get_cls_embed(tok_embed=embed_phase1, cls_pos=src_cls_pos)  # n_batch * n_cls * n_embed
         padded_cls_embed, pad_mask = padding_and_stack_cls(cls_embed)  # n_batch * MAX_SEQ_LENGTH * n_embed
-
 
         embed_tgt = self.embedding_inp(input_ids=tgt_ids,
                                        token_type_ids=tgt_token_type)  # n_batch * MAX_SEQ_LENGTH * 768

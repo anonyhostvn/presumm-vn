@@ -35,7 +35,6 @@ class PhoBert(nn.Module):
         """
         # print(input_ids, token_type_ids, attention_mask)
         if not self.is_freeze:
-            self.model.train()
             _ = self.model(
                 input_ids=input_ids,
                 token_type_ids=token_type_ids,
@@ -48,5 +47,4 @@ class PhoBert(nn.Module):
                     token_type_ids=token_type_ids,
                     attention_mask=attention_mask)
 
-        token_embed = _[0]
-        return token_embed
+        return _[0]
