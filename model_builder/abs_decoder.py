@@ -1,4 +1,4 @@
-from torch import nn
+from torch import nn, Tensor
 from config_const import MODEL_DIM, MAX_SEQ_LENGTH
 import torch
 
@@ -15,7 +15,10 @@ class AbsDecoder(nn.Module):
     # tgt_key_padding_mask: mask các token padding của tgt (batch_size * tgt_seq_len)
     # memory_key_padding_mask: mask các token padding của src (batch_size * src_seq_len)
     # tgt_mask: attention mask của decoder (để mô hình không nhìn được token ở tương lai)
-    def forward(self, tgt, memory, tgt_key_padding_mask, memory_key_padding_mask):
+    def forward(self, tgt: Tensor, memory: Tensor, tgt_key_padding_mask: Tensor, memory_key_padding_mask: Tensor):
+        device = tgt_key_padding_mask.get_device()
+        if self.tgt_mask.get_device() != device:
+            self.tgt_mask.to(device)
         out = self.transformer_decoder(tgt=tgt, memory=memory,
                                        tgt_key_padding_mask=tgt_key_padding_mask,
                                        memory_key_padding_mask=memory_key_padding_mask,
