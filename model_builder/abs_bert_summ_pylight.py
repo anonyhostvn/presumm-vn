@@ -30,7 +30,7 @@ class AbsBertSummPylight(LightningModule):
                           , src_cls_pos=src_lis_cls_pos
                           , tgt_ids=tgt_inp_ids, tgt_pad_mask=tgt_mask, tgt_token_type=tgt_tok_type_ids)
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx):
         """
         :param batch: input dataloader (src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask
                         , tgt_inp_ids, tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask)
