@@ -17,6 +17,7 @@ def args_parser():
     ap.add_argument('-gpus', '--gpus', required=False, help='Specify gpus device')
     ap.add_argument('-phase', '--phase', required=False, help='Specify phase [train, val, test]')
     ap.add_argument('-batch_size', '--batch_size', required=False, help='Specify the batch size')
+    ap.add_argument('-save_ckpt_path', '--save_ckpt_path', required=False, help='Specify the checkpoint path')
     args = vars(ap.parse_args())
 
     return args
@@ -36,4 +37,6 @@ if __name__ == '__main__':
     val_dataloader = DataLoader(dataset=val_dataset, batch_size=8, shuffle=True)
 
     start_training(abs_bert_summ_model=abs_bert_summ_pylight, train_dataloader=train_dataloader,
-                   val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'))
+                   val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'),
+                   save_ckpt_path=cmd_args.get('save_ckpt_path')
+                   )
