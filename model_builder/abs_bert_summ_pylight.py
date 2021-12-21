@@ -13,7 +13,7 @@ class AbsBertSummPylight(LightningModule):
                  , learning_rate: float = 2e-5
                  , adam_epsilon: float = 1e-8
                  , warmup_steps: int = 0
-                 , weight_decay: float = 0.0
+                 , weight_decay: float = 0.01
                  , **kwargs):
         super().__init__()
         abs_bert_summ = AbsBertSumm(vocab_size=vocab_size)
@@ -68,22 +68,59 @@ class AbsBertSummPylight(LightningModule):
         """
         model = self.model
         no_decay = ["bias", "LayerNorm.weight"]
-        optimizer_grouped_parameters = [
+        phase1_name = ['phase1_bert']
+        phase2_name = ['phase2_trans_decoder']
+
+        named_params = model.named_parameters()
+
+        optimizer_grouped_parameters_phase1 = [
             {
-                "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
+                "params": [p for n, p in named_params if
+                           not any(nd in n for nd in no_decay) and any(p1 in n for p1 in phase1_name)],
                 "weight_decay": self.hparams.weight_decay,
             },
             {
-                "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
+                "params": [p for n, p in named_params if
+                           any(nd in n for nd in no_decay) and any(p1 in n for p1 in phase1_name)],
                 "weight_decay": 0.0,
-            },
+            }
         ]
-        optimizer = AdamW(optimizer_grouped_parameters, lr=self.hparams.learning_rate, eps=self.hparams.adam_epsilon)
 
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer,
-            num_warmup_steps=self.hparams.warmup_steps,
+        optimizer_grouped_parameters_phase2 = [
+            {
+                "params": [p for n, p in named_params if
+                           not any(nd in n for nd in no_decay) and any(p1 in n for p1 in phase2_name)],
+                "weight_decay": self.hparams.weight_decay,
+            },
+            {
+                "params": [p for n, p in named_params if
+                           any(nd in n for nd in no_decay) and any(p2 in n for p2 in phase2_name)],
+                "weight_decay": 0.0,
+            }
+        ]
+
+        optimizer_phase1 = AdamW(params=optimizer_grouped_parameters_phase1,
+                                 lr=2e-3,
+                                 eps=1e-8,
+                                 betas=[0.9, 0.999])
+
+        optimizer_phase2 = AdamW(params=optimizer_grouped_parameters_phase2,
+                                 lr=0.1,
+                                 eps=1e-8,
+                                 betas=[0.9, 0.999])
+
+        scheduler_phase1 = get_linear_schedule_with_warmup(
+            optimizer_phase1,
+            num_warmup_steps=20000,
             num_training_steps=self.total_steps,
         )
-        scheduler = {"scheduler": scheduler, "interval": "step", "frequency": 1}
-        return [optimizer], [scheduler]
+
+        scheduler_phase2 = get_linear_schedule_with_warmup(
+            optimizer_phase2,
+            num_warmup_steps=10000,
+            num_training_steps=self.total_steps,
+        )
+
+        scheduler_phase1 = {"scheduler": scheduler_phase1, "interval": "step", "frequency": 1}
+
+        return [optimizer_phase1, optimizer_phase2], [scheduler_phase1, scheduler_phase2]

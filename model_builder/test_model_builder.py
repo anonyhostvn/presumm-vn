@@ -11,6 +11,7 @@ from torchinfo import summary
 if __name__ == '__main__':
     tokenizer = SummTokenize()
     abs_bert_summ = AbsBertSumm(vocab_size=tokenizer.phobert_tokenizer.vocab_size)
+    print([p for n, p in abs_bert_summ.named_parameters()])
 
     BATCH_SIZE = 8
     src_ids = torch.randint(size=(BATCH_SIZE, MAX_SEQ_LENGTH), low=0, high=100)
