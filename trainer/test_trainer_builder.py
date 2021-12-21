@@ -32,7 +32,7 @@ if __name__ == '__main__':
     vocab_size = tokenizer.phobert_tokenizer.vocab_size
     abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
-    val_dataset = SummDataset(cmd_args.get('json_data'))
+    val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
     val_dataloader = DataLoader(dataset=val_dataset, batch_size=8, shuffle=True)
 
     start_training(abs_bert_summ_model=abs_bert_summ_pylight, train_dataloader=train_dataloader,
