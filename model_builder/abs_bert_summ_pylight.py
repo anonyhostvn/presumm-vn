@@ -62,7 +62,7 @@ class AbsBertSummPylight(LightningModule):
         tensorboard_logs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboard_logs}
 
-    def validation_step(self, batch, batch_idx, optimizer_idx):
+    def validation_step(self, batch, batch_idx):
         src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
             , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
         with torch.no_grad():
