@@ -59,7 +59,7 @@ class AbsBertSummPylight(LightningModule):
             else:
                 loss += single_loss
 
-        tensorboard_logs = {'train_loss': loss}
+        tensorboard_logs = {'train_loss': loss.detach()}
         return {'loss': loss, 'log': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx):
