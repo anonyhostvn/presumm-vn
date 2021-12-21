@@ -4,31 +4,28 @@ from pytorch_lightning import LightningModule
 from transformers import AdamW, get_linear_schedule_with_warmup
 from torch.nn import CrossEntropyLoss
 
-from model_builder.abs_bert_summ import AbsBertSumm
+from model_builder.ext_bert_summ import ExtBertSumm
 
 
-class AbsBertSummPylight(LightningModule):
+class ExtBertSummPylight(LightningModule):
 
-    def __init__(self, vocab_size
+    def __init__(self, model, vocab_size
                  , learning_rate: float = 2e-5
                  , adam_epsilon: float = 1e-8
                  , warmup_steps: int = 0
                  , weight_decay: float = 0.0
                  , **kwargs):
         super().__init__()
-        abs_bert_summ = AbsBertSumm(vocab_size=vocab_size)
-        self.model = abs_bert_summ
         self.save_hyperparameters()
         self.total_steps = 10
-        self.vocab_size = vocab_size
+        self.model = ExtBertSumm()
         self.loss_fn = CrossEntropyLoss()
 
-    def forward(self, src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask
-                , tgt_inp_ids, tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask):
-        return self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
-                          # , is_freeze_phase1=True
-                          , src_cls_pos=src_lis_cls_pos
-                          , tgt_ids=tgt_inp_ids, tgt_pad_mask=tgt_mask, tgt_token_type=tgt_tok_type_ids)
+    def forward(self, src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask):
+        out_logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask,
+                                src_token_type=src_tok_type_ids,
+                                src_cls_pos=src_lis_cls_pos)
+        return out_logits
 
     def training_step(self, batch, batch_idx):
         """
@@ -37,16 +34,11 @@ class AbsBertSummPylight(LightningModule):
         :param batch_idx: Số thứ tự của batch
         :return:
         """
-        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
-            , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
-        logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
-                            # , is_freeze_phase1=True
-                            , src_cls_pos=src_lis_cls_pos
-                            , tgt_ids=tgt_inp_ids
-                            , tgt_pad_mask=tgt_mask
-                            , tgt_token_type=tgt_tok_type_ids)
-        out_prob = torch.softmax(logits, dim=2)
-        tgt_one_hot = one_hot(tgt_inp_ids, num_classes=self.vocab_size)
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, = batch
+        out_logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask
+                                , src_token_type=src_tok_type_ids
+                                , src_cls_pos=src_lis_cls_pos)
+        out_prob = torch.sigmoid(out_logits)
 
         loss = None
         for item_id in range(len(out_prob)):

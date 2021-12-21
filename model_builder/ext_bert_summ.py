@@ -14,7 +14,7 @@ class ExtBertSumm(nn.Module):
         self.phase1_bert = PhoBert(large=False, temp_dir=CACHED_MODEL_PATH, is_freeze=False)
         self.phase2_decoder = ExtDecoder()
         self.sent_classifier = Sequential(
-            nn.Linear(MODEL_DIM, 2)
+            nn.Linear(MODEL_DIM, 1)
         )
 
     def forward(self, src_ids, src_pad_mask, src_token_type, src_cls_pos):
@@ -48,4 +48,4 @@ if __name__ == '__main__':
     out_logits = ext_bert_summ(src_ids=input_src_ids, src_pad_mask=input_src_pad_mask,
                                src_token_type=input_src_token_type,
                                src_cls_pos=input_src_cls_pos)
-    print(torch.softmax(out_logits, dim=2))
+    print(torch.sigmoid(out_logits))

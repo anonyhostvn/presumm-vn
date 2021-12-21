@@ -26,8 +26,7 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(dataset=train_dataset, batch_size=8, shuffle=True)
 
     vocab_size = train_dataset.tokenizer.phobert_tokenizer.vocab_size
-    abs_bert_summ = AbsBertSumm(vocab_size=vocab_size)
-    abs_bert_summ_pylight = AbsBertSummPylight(model=abs_bert_summ, vocab_size=vocab_size)
+    abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
     val_dataset = SummDataset(cmd_args.get('json_data'))
     val_dataloader = DataLoader(dataset=val_dataset, batch_size=8, shuffle=True)
