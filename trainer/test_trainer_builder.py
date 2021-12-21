@@ -27,14 +27,16 @@ if __name__ == '__main__':
     cmd_args = args_parser()
 
     train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
-    train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True)
+    train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
+                                  num_workers=4)
 
     tokenizer = SummTokenize()
     vocab_size = tokenizer.phobert_tokenizer.vocab_size
     abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
     val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
-    val_dataloader = DataLoader(dataset=val_dataset, batch_size=8, shuffle=True)
+    val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
+                                num_workers=4)
 
     start_training(abs_bert_summ_model=abs_bert_summ_pylight, train_dataloader=train_dataloader,
                    val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'),
