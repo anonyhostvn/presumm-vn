@@ -21,15 +21,17 @@ if __name__ == '__main__':
     tgt_ids = torch.randint(size=(BATCH_SIZE, MAX_SEQ_LENGTH), low=0, high=100)
     tgt_mask = torch.randint(size=(BATCH_SIZE, MAX_SEQ_LENGTH), low=0, high=1).bool()
     tgt_token_type = torch.randint(size=(BATCH_SIZE, MAX_SEQ_LENGTH), low=0, high=1)
+    # src_ids, src_pad_mask, src_token_type, src_cls_pos
+    # , tgt_ids, tgt_pad_mask, tgt_token_type
     summary(model=abs_bert_summ,
             input_data=[
                 src_ids
                 , src_mask
                 , tok_type_ids
-                , True
                 , lis_cls_pos
                 , tgt_ids
-                , tgt_mask, tgt_token_type
+                , tgt_mask
+                , tgt_token_type
             ])
 
     logits = abs_bert_summ(src_ids=src_ids, src_pad_mask=src_mask,
