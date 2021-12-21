@@ -22,7 +22,7 @@ def args_parser():
 if __name__ == '__main__':
     cmd_args = args_parser()
 
-    train_dataset = SummDataset(cmd_args.get('json_data'))
+    train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='train')
     train_dataloader = DataLoader(dataset=train_dataset, batch_size=8, shuffle=True)
 
     vocab_size = train_dataset.tokenizer.phobert_tokenizer.vocab_size
