@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 from inp_dataloader.summ_dataset import SummDataset
 from model_builder.abs_bert_summ import AbsBertSumm
 from model_builder.abs_bert_summ_pylight import AbsBertSummPylight
+from tokenize_input.summ_tokenize import SummTokenize
 from trainer.trainer_builder import start_training
 import argparse
 
@@ -14,6 +15,7 @@ def args_parser():
     # Add the arguments to the parser
     ap.add_argument('-jsondat', '--json_data', required=True, help='Input in json format')
     ap.add_argument('-gpus', '--gpus', required=False, help='Specify gpus device')
+    ap.add_argument('-phase', '--phase', required=False, help='Specify phase [train, val, test]')
     args = vars(ap.parse_args())
 
     return args
@@ -22,10 +24,11 @@ def args_parser():
 if __name__ == '__main__':
     cmd_args = args_parser()
 
-    train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='train')
+    train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
     train_dataloader = DataLoader(dataset=train_dataset, batch_size=8, shuffle=True)
 
-    vocab_size = train_dataset.tokenizer.phobert_tokenizer.vocab_size
+    tokenizer = SummTokenize()
+    vocab_size = tokenizer.phobert_tokenizer.vocab_size
     abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
     val_dataset = SummDataset(cmd_args.get('json_data'))
