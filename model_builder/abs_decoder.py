@@ -6,7 +6,7 @@ import torch
 class AbsDecoder(nn.Module):
     def __init__(self, n_head=8, n_decoder_block=1):
         super(AbsDecoder, self).__init__()
-        decoder_layer = nn.TransformerDecoderLayer(batch_first=True, d_model=MODEL_DIM, nhead=n_head)
+        decoder_layer = nn.TransformerDecoderLayer(batch_first=True, d_model=MODEL_DIM, nhead=n_head, norm_first=True)
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=n_decoder_block)
         self.tgt_mask = torch.triu(torch.ones(size=(MAX_SEQ_LENGTH, MAX_SEQ_LENGTH)), diagonal=1).T
 
