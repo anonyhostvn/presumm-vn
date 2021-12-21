@@ -16,6 +16,7 @@ def args_parser():
     ap.add_argument('-jsondat', '--json_data', required=True, help='Input in json format')
     ap.add_argument('-gpus', '--gpus', required=False, help='Specify gpus device')
     ap.add_argument('-phase', '--phase', required=False, help='Specify phase [train, val, test]')
+    ap.add_argument('-batch_size', '--batch_size', required=False, help='Specify the batch size')
     args = vars(ap.parse_args())
 
     return args
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     cmd_args = args_parser()
 
     train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
-    train_dataloader = DataLoader(dataset=train_dataset, batch_size=8, shuffle=True)
+    train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True)
 
     tokenizer = SummTokenize()
     vocab_size = tokenizer.phobert_tokenizer.vocab_size
