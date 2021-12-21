@@ -35,7 +35,7 @@ if __name__ == '__main__':
     abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
     val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
-    val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
+    val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
                                 num_workers=4)
 
     start_training(abs_bert_summ_model=abs_bert_summ_pylight, train_dataloader=train_dataloader,
