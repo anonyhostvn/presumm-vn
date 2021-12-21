@@ -16,7 +16,7 @@ class AbsDecoder(nn.Module):
     # memory_key_padding_mask: mask các token padding của src (batch_size * src_seq_len)
     # tgt_mask: attention mask của decoder (để mô hình không nhìn được token ở tương lai)
     def forward(self, tgt: Tensor, memory: Tensor, tgt_key_padding_mask: Tensor, memory_key_padding_mask: Tensor):
-        self.tgt_mask = self.tgt_mask().to(tgt.device)
+        self.tgt_mask = self.tgt_mask.to(tgt.device)
         out = self.transformer_decoder(tgt=tgt, memory=memory,
                                        tgt_key_padding_mask=tgt_key_padding_mask,
                                        memory_key_padding_mask=memory_key_padding_mask,

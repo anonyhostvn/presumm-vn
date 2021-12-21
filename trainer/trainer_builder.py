@@ -11,5 +11,5 @@ class PrintCallback(Callback):
 
 
 def start_training(abs_bert_summ_model, train_dataloader, val_dataloader, gpus):
-    trainer = Trainer(accelerator='auto', gpus=gpus)
+    trainer = Trainer(accelerator='auto', gpus=gpus, max_epochs=10)
     trainer.fit(model=abs_bert_summ_model, train_dataloaders=train_dataloader)

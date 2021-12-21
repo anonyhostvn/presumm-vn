@@ -53,7 +53,7 @@ class AbsBertSummPylight(LightningModule):
             num_used_token = tgt_mask[item_id].sum()
             used_prob = out_prob[item_id][:num_used_token]
             used_tgt_one_hot = tgt_one_hot[item_id][:num_used_token]
-            single_loss = self.loss_fn(used_prob, used_tgt_one_hot)
+            single_loss = self.loss_fn(used_prob, used_tgt_one_hot.float())
             if loss is None:
                 loss = single_loss
             else:
