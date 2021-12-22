@@ -64,7 +64,7 @@ class ExtBertSummPylight(LightningModule):
 
         scheduler = get_linear_schedule_with_warmup(
             optimizer,
-            num_warmup_steps=10000,
+            num_warmup_steps=1000,
             num_training_steps=10
         )
         scheduler = {"scheduler": scheduler, "interval": "step", "frequency": 1}
