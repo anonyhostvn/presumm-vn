@@ -38,6 +38,9 @@ if __name__ == '__main__':
                                       num_workers=4)
 
         abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
+        save_check_point_path = cmd_args.get('save_ckpt_path')
+        if save_check_point_path is not None:
+            abs_bert_summ_pylight.load_from_checkpoint(save_check_point_path)
 
         val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
         val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
