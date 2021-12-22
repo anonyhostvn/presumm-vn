@@ -103,10 +103,9 @@ class AbsBertSummPylight(LightningModule):
                                 , tgt_pad_mask=tgt_mask
                                 , tgt_token_type=tgt_tok_type_ids)
             out_prob = torch.softmax(logits, dim=2)
-            pred_ids = [
-                [torch.argmax(lis_tok) for lis_tok in batch] for batch in out_prob
-            ]
-            print(self.tokenizer.phobert_tokenizer.decode(pred_ids))
+            out_ids = torch.argmax(out_prob, dim=2)
+
+            print(self.tokenizer.phobert_tokenizer.decode(out_ids[0]))
 
     def configure_optimizers(self):
         """
