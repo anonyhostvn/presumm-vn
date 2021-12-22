@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/abs_bert_data/train" />
       <excludeFolder url="file://$MODULE_DIR$/abs_bert_data" />
       <excludeFolder url="file://$MODULE_DIR$/json" />
+      <excludeFolder url="file://$MODULE_DIR$/ext_bert_data" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (conda-env-1)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
