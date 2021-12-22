@@ -41,7 +41,7 @@ class ExtBertSummPylight(LightningModule):
 
         loss = self.loss_fn(masked_out_prob, ext_ids.float())
 
-        tensorboard_logs = {'train_loss': loss}
+        tensorboard_logs = {'train_loss': loss.detach()}
         return {'loss': loss, 'log': tensorboard_logs}
 
     def configure_optimizers(self):
@@ -82,5 +82,5 @@ class ExtBertSummPylight(LightningModule):
             loss = self.loss_fn(masked_out_prob, ext_ids.float())
 
             tensorboard_logs = {'val_loss': loss}
-            self.log('val_loss', loss)
+            self.log('val_loss', loss.detach())
             return {'loss': loss, 'log': tensorboard_logs}
