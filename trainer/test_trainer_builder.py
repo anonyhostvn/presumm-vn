@@ -1,3 +1,4 @@
+from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
 
 from inp_dataloader.summ_dataset import SummDataset
@@ -25,20 +26,32 @@ def args_parser():
 
 if __name__ == '__main__':
     cmd_args = args_parser()
+    phase = cmd_args.get('phase')
+    if phase == 'train':
 
-    train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
-    train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
-                                  num_workers=4)
+        train_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
+        train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
+                                      num_workers=4)
 
-    tokenizer = SummTokenize()
-    vocab_size = tokenizer.phobert_tokenizer.vocab_size
-    abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
+        tokenizer = SummTokenize()
+        vocab_size = tokenizer.phobert_tokenizer.vocab_size
+        abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
-    val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
-    val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
-                                num_workers=4)
+        val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
+        val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
+                                    num_workers=4)
 
-    start_training(abs_bert_summ_model=abs_bert_summ_pylight, train_dataloader=train_dataloader,
-                   val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'),
-                   save_ckpt_path=cmd_args.get('save_ckpt_path')
-                   )
+        start_training(abs_bert_summ_model=abs_bert_summ_pylight, train_dataloader=train_dataloader,
+                       val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'),
+                       save_ckpt_path=cmd_args.get('save_ckpt_path')
+                       )
+    #
+    # elif phase == 'test':
+    #     test_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
+    #     test_dataloader = DataLoader(dataset=test_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
+    #                                  num_workers=4)
+    #     trainer = Trainer(accelerator='auto', gpus=gpus, max_epochs=10, default_root_dir=save_ckpt_path)
+    #     trainer.test(model=abs_bert_summ_model,
+    #                 train_dataloaders=train_dataloader,
+    #                 val_dataloaders=val_dataloader)
+

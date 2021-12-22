@@ -15,3 +15,8 @@ def start_training(abs_bert_summ_model, train_dataloader, val_dataloader, gpus, 
     trainer.fit(model=abs_bert_summ_model,
                 train_dataloaders=train_dataloader,
                 val_dataloaders=val_dataloader)
+
+
+def start_test(model, test_dataloader, gpus):
+    trainer = Trainer(accelerator='auto', gpus=gpus, max_epochs=10)
+    trainer.test(model, dataloaders=test_dataloader)

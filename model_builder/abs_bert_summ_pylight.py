@@ -12,7 +12,7 @@ class AbsBertSummPylight(LightningModule):
     def __init__(self, vocab_size
                  , learning_rate: float = 2e-5
                  , adam_epsilon: float = 1e-8
-                 , warmup_steps: int = 0
+                 , warmup_steps: int = 10000
                  , weight_decay: float = 0.01
                  , **kwargs):
         super().__init__()
@@ -89,6 +89,19 @@ class AbsBertSummPylight(LightningModule):
             tensorboard_logs = {'val_loss': loss}
             self.log('val_loss', loss)
             return {'loss': loss, 'log': tensorboard_logs}
+
+    def predict_step(self, batch, batch_idx, dataloader_idx=None):
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
+            , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
+        with torch.no_grad():
+            logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
+                                # , is_freeze_phase1=True
+                                , src_cls_pos=src_lis_cls_pos
+                                , tgt_ids=tgt_inp_ids
+                                , tgt_pad_mask=tgt_mask
+                                , tgt_token_type=tgt_tok_type_ids)
+            out_prob = torch.softmax(logits, dim=2)
+            return out_prob
 
     def configure_optimizers(self):
         """

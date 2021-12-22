@@ -8,10 +8,10 @@ from model_builder.ext_bert_summ import ExtBertSumm
 
 class ExtBertSummPylight(LightningModule):
 
-    def __init__(self, learning_rate: float = 2e-5
+    def __init__(self, learning_rate: float = 2e-3
                  , adam_epsilon: float = 1e-8
-                 , warmup_steps: int = 0
-                 , weight_decay: float = 0.0
+                 , warmup_steps: int = 1000
+                 , weight_decay: float = 0.01
                  , **kwargs):
         super().__init__()
         self.save_hyperparameters()
