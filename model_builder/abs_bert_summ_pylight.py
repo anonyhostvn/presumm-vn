@@ -17,7 +17,7 @@ class AbsBertSummPylight(LightningModule):
                  , weight_decay: float = 0.01
                  , **kwargs):
         super().__init__()
-        abs_bert_summ = AbsBertSumm(vocab_size=vocab_size)
+        abs_bert_summ = AbsBertSumm(vocab_size=vocab_size, tokenizer=tokenizer)
         self.model = abs_bert_summ
         self.save_hyperparameters()
         self.total_steps = 10
@@ -37,12 +37,14 @@ class AbsBertSummPylight(LightningModule):
         :param batch: input dataloader (src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask
                         , tgt_inp_ids, tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask)
         :param batch_idx: Số thứ tự của batch
+        :param optimizer_idx: Số thứ tự của optimizer
         :return:
         """
         src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
             , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
-        logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask, src_token_type=src_tok_type_ids
-                            # , is_freeze_phase1=True
+        logits = self.model(src_ids=src_inp_ids
+                            , src_pad_mask=src_mask
+                            , src_token_type=src_tok_type_ids
                             , src_cls_pos=src_lis_cls_pos
                             , tgt_ids=tgt_inp_ids
                             , tgt_pad_mask=tgt_mask
@@ -92,7 +94,7 @@ class AbsBertSummPylight(LightningModule):
             self.log('val_loss', loss)
             return {'loss': loss, 'log': tensorboard_logs}
 
-    def test_step(self, batch, batch_idx, dataloader_idx=None):
+    def predict_step(self, batch, batch_idx, dataloader_idx=None):
         src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
             , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
         with torch.no_grad():
@@ -105,7 +107,10 @@ class AbsBertSummPylight(LightningModule):
             out_prob = torch.softmax(logits, dim=2)
             out_ids = torch.argmax(out_prob, dim=2)
 
-            print(self.tokenizer.phobert_tokenizer.decode(out_ids[0]))
+            lis_res = []
+            for each_batch in out_ids:
+                lis_res.append(self.tokenizer.phobert_tokenizer.decode(each_batch))
+            return lis_res
 
     def configure_optimizers(self):
         """

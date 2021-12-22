@@ -71,7 +71,7 @@ class SummTokenize:
 
         return padded_input_ids, padded_token_type_ids, padded_lis_cls_pos, pad_mask.long()
 
-    def tokenizing_formatted_input(self, src, tgt, is_pad=False):
+    def tokenizing_formatted_input(self, src, tgt=None, is_pad=False):
         """
         :param is_pad: Có padding theo MAX_SEQ_LENGTH luôn hay không
         :param src: Xâu đầu vào đã được segmentation (n_sent * n_token)
@@ -80,11 +80,13 @@ class SummTokenize:
         :return: tgt_tokenized_res (input_ids, token_type_ids, lis_cls_pos, [is_pad = true] mask)
         """
         src_tokenized_res = self.tokenize_formatted_list(src)
-        tgt_tokenized_res = self.tokenize_formatted_list(tgt)
+        tgt_tokenized_res = None
+        if tgt is not None:
+            tgt_tokenized_res = self.tokenize_formatted_list(tgt)
 
         if is_pad:
             return self.padding_seq(*src_tokenized_res), \
-                   self.padding_seq(*tgt_tokenized_res)
+                   self.padding_seq(*tgt_tokenized_res) if tgt is not None else None
 
         return src_tokenized_res, tgt_tokenized_res
 

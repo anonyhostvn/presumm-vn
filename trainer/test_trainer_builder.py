@@ -37,7 +37,6 @@ if __name__ == '__main__':
         train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
                                       num_workers=4)
 
-        vocab_size = tokenizer.phobert_tokenizer.vocab_size
         abs_bert_summ_pylight = AbsBertSummPylight(vocab_size=vocab_size)
 
         val_dataset = SummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')

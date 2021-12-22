@@ -3,6 +3,7 @@ import torch
 
 from model_builder.ext_bert_summ_pylight import ExtBertSummPylight
 from tokenize_input.summ_tokenize import SummTokenize
+
 THRESHOLD = 0.3
 
 
@@ -32,5 +33,6 @@ def inference_json(json_path, model):
 
 if __name__ == '__main__':
     ext_bert_summ_pylight = ExtBertSummPylight()
+    ext_bert_summ_pylight.load_from_checkpoint('/Users/LongNH/Workspace/presumm-vn/pretrained_models/epoch=1-step=499.ckpt')
     inference_json(json_path='/Users/LongNH/Workspace/presumm-vn/inferences/test_sample.json',
                    model=ext_bert_summ_pylight)
