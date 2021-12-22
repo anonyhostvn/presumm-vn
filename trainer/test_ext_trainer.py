@@ -16,6 +16,8 @@ def args_parser():
     ap.add_argument('-phase', '--phase', required=False, help='Specify phase [train, val, test]')
     ap.add_argument('-batch_size', '--batch_size', required=False, help='Specify the batch size')
     ap.add_argument('-save_ckpt_path', '--save_ckpt_path', required=False, help='Specify the checkpoint path')
+    ap.add_argument('-load_checkpoint', '--load_checkpoint', required=False, help='Specify the checkpoint to load')
+
     args = vars(ap.parse_args())
 
     return args
@@ -32,6 +34,9 @@ if __name__ == '__main__':
                                       num_workers=4)
 
         ext_bert_summ_pylight = ExtBertSummPylight()
+        save_check_point_path = cmd_args.get('load_checkpoint')
+        if save_check_point_path is not None:
+            ext_bert_summ_pylight.load_from_checkpoint(save_check_point_path)
 
         val_dataset = ExtSummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
         val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
