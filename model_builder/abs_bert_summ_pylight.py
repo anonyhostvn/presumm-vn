@@ -10,6 +10,7 @@ from model_builder.abs_bert_summ import AbsBertSumm
 class AbsBertSummPylight(LightningModule):
 
     def __init__(self, vocab_size
+                 , tokenizer=None
                  , learning_rate: float = 2e-5
                  , adam_epsilon: float = 1e-8
                  , warmup_steps: int = 10000
@@ -22,6 +23,7 @@ class AbsBertSummPylight(LightningModule):
         self.total_steps = 10
         self.vocab_size = vocab_size
         self.loss_fn = CrossEntropyLoss()
+        self.tokenizer = tokenizer
 
     def forward(self, src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask
                 , tgt_inp_ids, tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask):
@@ -90,7 +92,7 @@ class AbsBertSummPylight(LightningModule):
             self.log('val_loss', loss)
             return {'loss': loss, 'log': tensorboard_logs}
 
-    def predict_step(self, batch, batch_idx, dataloader_idx=None):
+    def test_step(self, batch, batch_idx, dataloader_idx=None):
         src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids \
             , tgt_tok_type_ids, tgt_lis_cls_pos, tgt_mask = batch
         with torch.no_grad():
@@ -101,7 +103,10 @@ class AbsBertSummPylight(LightningModule):
                                 , tgt_pad_mask=tgt_mask
                                 , tgt_token_type=tgt_tok_type_ids)
             out_prob = torch.softmax(logits, dim=2)
-            return out_prob
+            pred_ids = [
+                [torch.argmax(lis_tok) for lis_tok in batch] for batch in out_prob
+            ]
+            print(self.tokenizer.phobert_tokenizer.decode(pred_ids))
 
     def configure_optimizers(self):
         """
