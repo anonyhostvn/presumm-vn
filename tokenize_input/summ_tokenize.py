@@ -89,14 +89,16 @@ class SummTokenize:
         return src_tokenized_res, tgt_tokenized_res
 
     def one_hot_lis_tgt(self, ext_id):
-        one_hot_vec = torch.zeros(size=(self.max_seq_length, ), dtype=torch.long)
+        one_hot_vec = torch.zeros(size=(self.max_seq_length,), dtype=torch.long)
         for i in ext_id:
             one_hot_vec[i] = 1
         return one_hot_vec
 
-    def tokenizing_ext_input(self, src, ext_id, tgt, is_pad=True):
+    def tokenizing_ext_input(self, src, ext_id=None, is_pad=True):
         src_tokenized_res = self.tokenize_formatted_list(src)
-        one_hot_vec_tgt = self.one_hot_lis_tgt(ext_id)
+        one_hot_vec_tgt = None
+        if ext_id is not None:
+            one_hot_vec_tgt = self.one_hot_lis_tgt(ext_id)
         if not is_pad:
             return src_tokenized_res, one_hot_vec_tgt
         return self.padding_seq(*src_tokenized_res), one_hot_vec_tgt

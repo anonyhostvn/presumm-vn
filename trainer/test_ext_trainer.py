@@ -24,17 +24,20 @@ def args_parser():
 if __name__ == '__main__':
     cmd_args = args_parser()
 
-    train_dataset = ExtSummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
-    train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
-                                  num_workers=4)
+    phase = cmd_args.get('phase')
 
-    ext_bert_summ_pylight = ExtBertSummPylight()
+    if phase == 'train':
+        train_dataset = ExtSummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase=cmd_args.get('phase'))
+        train_dataloader = DataLoader(dataset=train_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=True,
+                                      num_workers=4)
 
-    val_dataset = ExtSummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
-    val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
-                                num_workers=4)
+        ext_bert_summ_pylight = ExtBertSummPylight()
 
-    start_training(abs_bert_summ_model=ext_bert_summ_pylight, train_dataloader=train_dataloader,
-                   val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'),
-                   save_ckpt_path=cmd_args.get('save_ckpt_path')
-                   )
+        val_dataset = ExtSummDataset(bert_data_folder_path=cmd_args.get('json_data'), phase='val')
+        val_dataloader = DataLoader(dataset=val_dataset, batch_size=int(cmd_args.get('batch_size')), shuffle=False,
+                                    num_workers=4)
+
+        start_training(abs_bert_summ_model=ext_bert_summ_pylight, train_dataloader=train_dataloader,
+                       val_dataloader=val_dataloader, gpus=cmd_args.get('gpus'),
+                       save_ckpt_path=cmd_args.get('save_ckpt_path')
+                       )

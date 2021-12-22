@@ -44,6 +44,16 @@ class ExtBertSummPylight(LightningModule):
         tensorboard_logs = {'train_loss': loss.detach()}
         return {'loss': loss, 'log': tensorboard_logs}
 
+    def predict_step(self, batch, batch_idx, dataloader_idx=None):
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, ext_ids = batch
+        with torch.no_grad():
+            out_logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask
+                                    , src_token_type=src_tok_type_ids
+                                    , src_cls_pos=src_lis_cls_pos)
+            out_prob = torch.sigmoid(out_logits).reshape(len(src_inp_ids), -1)
+            masked_out_prob = out_prob * src_mask
+            return masked_out_prob
+
     def configure_optimizers(self):
         """
         Chuẩn bị Optimizer với chiến lược warm-up và weight-decay
