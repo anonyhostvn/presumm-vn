@@ -40,7 +40,7 @@ class ExtBertSummPylight(LightningModule):
         out_prob = torch.sigmoid(out_logits).reshape(len(src_inp_ids), -1)
         masked_out_prob = out_prob * src_mask
 
-        loss = self.loss_fn(masked_out_prob, ext_ids)
+        loss = self.loss_fn(masked_out_prob, ext_ids.float())
 
         tensorboard_logs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboard_logs}
@@ -70,3 +70,18 @@ class ExtBertSummPylight(LightningModule):
         )
         scheduler = {"scheduler": scheduler, "interval": "step", "frequency": 1}
         return [optimizer], [scheduler]
+
+    def validation_step(self, batch, batch_idx):
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids, ext_ids = batch
+        with torch.no_grad():
+            out_logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask
+                                    , src_token_type=src_tok_type_ids
+                                    , src_cls_pos=src_lis_cls_pos)
+            out_prob = torch.sigmoid(out_logits).reshape(len(src_inp_ids), -1)
+            masked_out_prob = out_prob * src_mask
+
+            loss = self.loss_fn(masked_out_prob, ext_ids.float())
+
+            tensorboard_logs = {'val_loss': loss}
+            self.log('val_loss', loss)
+            return {'loss': loss, 'log': tensorboard_logs}
