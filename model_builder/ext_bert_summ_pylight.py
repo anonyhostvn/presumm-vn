@@ -9,8 +9,7 @@ from model_builder.ext_bert_summ import ExtBertSumm
 
 class ExtBertSummPylight(LightningModule):
 
-    def __init__(self, model, vocab_size
-                 , learning_rate: float = 2e-5
+    def __init__(self, learning_rate: float = 2e-5
                  , adam_epsilon: float = 1e-8
                  , warmup_steps: int = 0
                  , weight_decay: float = 0.0
@@ -34,22 +33,14 @@ class ExtBertSummPylight(LightningModule):
         :param batch_idx: Số thứ tự của batch
         :return:
         """
-        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, = batch
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, ext_ids = batch
         out_logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask
                                 , src_token_type=src_tok_type_ids
                                 , src_cls_pos=src_lis_cls_pos)
-        out_prob = torch.sigmoid(out_logits)
+        out_prob = torch.sigmoid(out_logits).reshape(len(src_inp_ids), -1)
+        masked_out_prob = out_prob * src_mask
 
-        loss = None
-        for item_id in range(len(out_prob)):
-            num_used_token = tgt_mask[item_id].sum()
-            used_prob = out_prob[item_id][:num_used_token]
-            used_tgt_one_hot = tgt_one_hot[item_id][:num_used_token]
-            single_loss = self.loss_fn(used_prob, used_tgt_one_hot)
-            if loss is None:
-                loss = single_loss
-            else:
-                loss += single_loss
+        loss = self.loss_fn(masked_out_prob, ext_ids)
 
         tensorboard_logs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboard_logs}

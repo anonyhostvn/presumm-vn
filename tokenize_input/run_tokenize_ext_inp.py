@@ -6,7 +6,7 @@ from tqdm import tqdm
 if __name__ == '__main__':
     tokenizer = SummTokenize()
 
-    phase = 'test'
+    phase = 'train'
     with open(f'/Users/LongNH/Workspace/presumm-vn/ext_bert_data/json_data.{phase}.json', 'r') as f:
         lis_data = json.load(f)
     for i, data in enumerate(tqdm(lis_data)):

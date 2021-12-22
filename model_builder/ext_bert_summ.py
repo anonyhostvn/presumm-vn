@@ -6,6 +6,7 @@ from config_const import CACHED_MODEL_PATH, MODEL_DIM
 from model_builder.ext_decoder import ExtDecoder
 from model_builder.phobert_model import PhoBert
 from model_builder.utils import get_cls_embed, padding_and_stack_cls
+from torch.nn import CrossEntropyLoss
 
 
 class ExtBertSumm(nn.Module):
@@ -41,11 +42,19 @@ class ExtBertSumm(nn.Module):
 
 if __name__ == '__main__':
     ext_bert_summ = ExtBertSumm()
-    input_src_ids = torch.randint(size=(1, 512), low=0, high=1000)
-    input_src_pad_mask = torch.randint(size=(1, 512), low=0, high=2)
-    input_src_token_type = torch.randint(size=(1, 512), low=0, high=2)
-    input_src_cls_pos = torch.randint(size=(1, 512), low=0, high=512)
+    BATCH_SIZE = 2
+    input_src_ids = torch.randint(size=(BATCH_SIZE, 512), low=0, high=1000)
+    input_src_pad_mask = torch.randint(size=(BATCH_SIZE, 512), low=0, high=2)
+    input_src_token_type = torch.randint(size=(BATCH_SIZE, 512), low=0, high=2)
+    input_src_cls_pos = torch.randint(size=(BATCH_SIZE, 512), low=0, high=512)
+    output_ext_ids = torch.randint(size=(BATCH_SIZE, 512), low=0, high=2).float()
     out_logits = ext_bert_summ(src_ids=input_src_ids, src_pad_mask=input_src_pad_mask,
                                src_token_type=input_src_token_type,
                                src_cls_pos=input_src_cls_pos)
-    print(torch.sigmoid(out_logits))
+    cr_loss = CrossEntropyLoss()
+    out_prob = torch.sigmoid(out_logits).reshape(-1, 512)
+    mask = torch.zeros(size=(BATCH_SIZE, 512))
+    print((mask * out_prob).shape)
+    print(cr_loss(out_prob * mask, output_ext_ids * mask))
+
+    # print((out_logits.reshape(-1, 512) > 0.2).long())
