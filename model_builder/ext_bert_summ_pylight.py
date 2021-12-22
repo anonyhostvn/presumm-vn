@@ -1,5 +1,4 @@
 import torch
-from torch.nn.functional import one_hot
 from pytorch_lightning import LightningModule
 from transformers import AdamW, get_linear_schedule_with_warmup
 from torch.nn import CrossEntropyLoss
@@ -72,7 +71,7 @@ class ExtBertSummPylight(LightningModule):
         return [optimizer], [scheduler]
 
     def validation_step(self, batch, batch_idx):
-        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, tgt_inp_ids, ext_ids = batch
+        src_inp_ids, src_tok_type_ids, src_lis_cls_pos, src_mask, ext_ids = batch
         with torch.no_grad():
             out_logits = self.model(src_ids=src_inp_ids, src_pad_mask=src_mask
                                     , src_token_type=src_tok_type_ids
